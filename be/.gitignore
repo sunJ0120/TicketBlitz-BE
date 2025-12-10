@@ -1,0 +1,29 @@
+### IDE 및 빌드 결과물 (Git에 올리면 안 됨) ###
+# IDE files (IntelliJ, VS Code 등)
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+.vscode/
+
+# Build artifacts
+build/
+bin/
+target/ # Spring Boot Gradle은 build/를 쓰지만, 혹시 모를 maven 등을 위해 추가
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# Gradle files (Git에 올리면 안 되는 캐시, 로그 등)
+.gradle/
+.gradle-enterprise/
+.gradle.stash/
+/local.properties
+/gradle-wrapper.properties.bak
+
+# Log files
+*.log
+
+# Environment Variables and Secrets (필수 제외 대상)
+.env
+local.settings.json

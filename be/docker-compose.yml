@@ -1,0 +1,34 @@
+services:
+  mysql:
+    image: 'mysql:latest'
+    container_name: ticketing-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      TZ: Asia/Seoul # 시간대 설정 추가 (DB 데이터 시간 정합성을 위해 필수)
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+  redis:
+    image: 'redis:latest'
+    container_name: ticketing-redis
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+    ports:
+      - "6379:6379"
+    command:
+      - redis-server
+      - --appendonly
+      - yes
+      - --requirepass
+      - "${REDIS_PASSWORD}"
+    volumes:
+      - redis_data:/data
+
+volumes:    # 볼륨 선언
+  mysql_data:
+  redis_data:
