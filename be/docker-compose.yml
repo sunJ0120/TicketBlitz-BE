@@ -1,4 +1,7 @@
 services:
+  app:
+    environment:
+      JWT_SECRET: ${JWT_SECRET}
   mysql:
     image: 'mysql:latest'
     container_name: ticketing-mysql
