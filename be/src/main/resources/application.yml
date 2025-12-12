@@ -1,0 +1,73 @@
+jwt:
+  secret: ${JWT_SECRET}
+  access-token-expiration: ${JWT_ACCESS_EXPIRATION_DEV:43200000}    # 개발 테스트 편의성을 위해 12시간 설정
+  refresh-token-expiration: ${JWT_REFRESH_EXPIRATION}
+
+spring:    # dev 환경
+  config:
+    import: optional:file:.env[.properties]
+  autoconfigure:
+    exclude: # 임시로 redis 환경 off
+      - org.springframework.boot.data.redis.autoconfigure.DataRedisAutoConfiguration
+      - org.springframework.boot.data.redis.autoconfigure.DataRedisReactiveAutoConfiguration
+  docker:
+    compose:
+      enabled: false    # 개발 환경에서 Docker 비활성화
+  datasource:
+    url: jdbc:h2:file:./data/be_db;AUTO_SERVER=TRUE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: password
+  sql:
+    init:
+      mode: never   # 임베디드 db 첫 실행시로 변경 원하면 embedded로 변경
+#      schema-locations: classpath:schema.sql
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+#    defer-datasource-initialization: true    # JPA 초기화 후 schema.sql 실행
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+logging:
+  level:
+    org.springframework.jdbc.datasource.init: DEBUG
+
+---
+
+spring:  # prod 환경
+  config:
+    activate:
+      on-profile: prod
+  autoconfigure:
+    exclude: [ ]
+  docker:
+    compose:
+      enabled: true
+  sql:
+    init:
+      mode: never   # prod 환경에서 자동 sql 초기화 기능 off
+  datasource:
+    url: ${MYSQL_URL}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: ${MYSQL_USER}
+    password: ${MYSQL_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: validate  # prod 환경에서는 테이블 자동 수정을 막기 위해 validate 설정
+  h2:
+    console:
+      enabled: false
+
+jwt:
+  access-token-expiration: ${JWT_ACCESS_EXPIRATION_PROD}
+
+logging:
+  level:
+    org.springframework.jdbc.datasource.init: INFO
