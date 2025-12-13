@@ -27,14 +27,27 @@ public class SecurityConfig {
 
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-    http.csrf(csrf -> csrf.disable()).sessionManagement(
+    http.csrf(csrf -> csrf.disable())
+        .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(
-            auth -> auth.requestMatchers("/auth/**").permitAll().requestMatchers("/h2-console/**")
-                .permitAll().requestMatchers("/admin/**").hasRole("ADMIN")
-                .requestMatchers("/api/**").hasRole("USER").anyRequest().authenticated())
+            auth -> auth
+                .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**",
+                    "/swagger-resources/**")
+                .permitAll()
+                .requestMatchers("/auth/**")
+                .permitAll()
+                .requestMatchers("/h2-console/**")
+                .permitAll()
+                .requestMatchers("/admin/**")
+                .hasRole("ADMIN")
+                .requestMatchers("/api/**")
+                .hasRole("USER")
+                .anyRequest()
+                .authenticated())
         .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))
-        .formLogin(form -> form.disable()).httpBasic(httpBasic -> httpBasic.disable())
+        .formLogin(form -> form.disable())
+        .httpBasic(httpBasic -> httpBasic.disable())
         .addFilterBefore(new JwtAuthenticationFilter(jwtProvider),
             UsernamePasswordAuthenticationFilter.class);
 
