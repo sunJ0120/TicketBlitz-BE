@@ -1,6 +1,6 @@
 package com.example.be.config;
 
-import com.example.be.auth.service.RedisBlacklistService;
+import com.example.be.auth.service.RedisTokenService;
 import com.example.be.security.JwtAuthenticationFilter;
 import com.example.be.security.JwtProvider;
 import com.example.be.security.JwtUtils;
@@ -26,7 +26,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class SecurityConfig {
 
   private final JwtProvider jwtProvider;
-  private final RedisBlacklistService redisBlacklistService;
+  private final RedisTokenService redisTokenService;
   private final JwtUtils jwtUtils;
 
   @Bean
@@ -70,7 +70,7 @@ public class SecurityConfig {
         .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))
         .formLogin(form -> form.disable())
         .httpBasic(httpBasic -> httpBasic.disable())
-        .addFilterBefore(new JwtAuthenticationFilter(jwtProvider, redisBlacklistService, jwtUtils),
+        .addFilterBefore(new JwtAuthenticationFilter(jwtProvider, redisTokenService, jwtUtils),
             UsernamePasswordAuthenticationFilter.class);
 
     return http.build();
