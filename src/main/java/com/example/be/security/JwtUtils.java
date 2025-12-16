@@ -1,6 +1,5 @@
 package com.example.be.security;
 
-import com.example.be.auth.service.RedisBlacklistService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Component;
 
