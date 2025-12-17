@@ -71,12 +71,6 @@ public class AuthService {
   }
 
   public LoginResponse refresh(String refreshToken) {
-    try {
-      authValidator.validateAndGetToken(refreshToken);
-    } catch (io.jsonwebtoken.JwtException | IllegalArgumentException e) {
-      return null;
-    }
-
     Long userId = jwtProvider.getUserId(refreshToken);
     Role role = jwtProvider.getRole(refreshToken);
 
