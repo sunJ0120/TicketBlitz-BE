@@ -35,10 +35,12 @@ spring: # dev 환경
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
-      ddl-auto: update
+      ddl-auto: update  # ← H2 자동 생성
     properties:
       hibernate:
+        show-sql: true
         format_sql: true
+        highlight_sql: true
   #    defer-datasource-initialization: true    # JPA 초기화 후 schema.sql 실행
   h2:
     console:
