@@ -1,5 +1,6 @@
 package com.example.be.user;
 
+import com.example.be.common.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -28,7 +29,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "social_accounts")
 @EntityListeners(AuditingEntityListener.class)
-public class SocialAccount {
+public class SocialAccount extends BaseTimeEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,8 +45,4 @@ public class SocialAccount {
 
   @Column(name = "provider_id", nullable = false)
   private String providerId;
-
-  @CreatedDate
-  @Column(name = "created_at", updatable = false)
-  private LocalDateTime createdAt;
 }

@@ -1,5 +1,6 @@
 package com.example.be.user;
 
+import com.example.be.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -15,7 +16,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "users")
 @EntityListeners(AuditingEntityListener.class)    // 생성/수정 시간 자동 관리를 위해 추가
-public class User {
+public class User extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,12 +34,4 @@ public class User {
   @Enumerated(EnumType.STRING)
   @Column(nullable = false)
   private Role role;
-
-  @CreatedDate
-  @Column(name = "created_at", updatable = false)
-  private LocalDateTime createdAt;
-
-  @LastModifiedDate
-  @Column(name = "updated_at")
-  private LocalDateTime updatedAt;
 }
