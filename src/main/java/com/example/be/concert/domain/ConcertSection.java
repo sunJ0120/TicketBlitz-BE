@@ -1,4 +1,4 @@
-package com.example.be.concert;
+package com.example.be.concert.domain;
 
 import com.example.be.common.BaseEntity;
 import jakarta.persistence.Column;

@@ -1,7 +1,8 @@
-package com.example.be.seat;
+package com.example.be.concert.domain;
 
 import com.example.be.common.BaseEntity;
-import com.example.be.concert.ConcertSection;
+import com.example.be.concert.enums.SeatLabel;
+import com.example.be.concert.enums.SeatStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -16,14 +17,12 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(
     name = "concert_seats",
@@ -40,7 +39,7 @@ public class ConcertSeat extends BaseEntity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(name = "section_id", nullable = false, foreignKey = @ForeignKey(name = "fk_concert_seat_section"))
   private ConcertSection concertSection;
 
@@ -62,6 +61,7 @@ public class ConcertSeat extends BaseEntity {
   public ConcertSeat(ConcertSection concertSection, Integer rowNum, Integer seatNum,
       SeatLabel seatLabel, SeatStatus seatStatus) {
     validatePosition(rowNum, seatNum);
+
     this.concertSection = concertSection;
     this.rowNum = rowNum;
     this.seatNum = seatNum;
