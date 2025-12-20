@@ -1,4 +1,4 @@
-package com.example.be.payment;
+package com.example.be.payment.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
