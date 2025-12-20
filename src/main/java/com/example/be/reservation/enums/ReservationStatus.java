@@ -1,4 +1,4 @@
-package com.example.be.reservation;
+package com.example.be.reservation.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

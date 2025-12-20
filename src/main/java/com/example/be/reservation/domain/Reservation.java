@@ -1,8 +1,9 @@
-package com.example.be.reservation;
+package com.example.be.reservation.domain;
 
 import com.example.be.common.BaseEntity;
-import com.example.be.seat.ConcertSeat;
-import com.example.be.user.User;
+import com.example.be.concert.domain.ConcertSeat;
+import com.example.be.reservation.enums.ReservationStatus;
+import com.example.be.user.domain.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -16,6 +17,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Min;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
@@ -43,6 +45,7 @@ public class Reservation extends BaseEntity {
   @JoinColumn(name = "seat_id", nullable = false, foreignKey = @ForeignKey(name = "fk_reservation_seat"))
   private ConcertSeat concertSeat;
 
+  @Min(value = 0, message = "가격은 0 이상이어야 합니다")
   @Column(nullable = false, precision = 10, scale = 0)
   private BigDecimal price;
 
@@ -50,7 +53,7 @@ public class Reservation extends BaseEntity {
   @Column(name = "reservation_status", nullable = false, length = 20)
   private ReservationStatus reservationStatus = ReservationStatus.PENDING;
 
-  @Column(name = "reserved_at", nullable = false, length = 20)
+  @Column(name = "reserved_at", nullable = false)
   private LocalDateTime reservedAt;
 
   @Column(name = "confirmed_at")
@@ -65,16 +68,10 @@ public class Reservation extends BaseEntity {
   @Builder
   public Reservation(User user, ConcertSeat concertSeat, BigDecimal price,
       LocalDateTime expiresAt) {
-    validatePrice(price);
     this.user = user;
     this.concertSeat = concertSeat;
     this.price = price;
     this.expiresAt = expiresAt;
-  }
-
-  private void validatePrice(BigDecimal price) {
-    if (price == null || price.compareTo(BigDecimal.ZERO) < 0) {
-      throw new IllegalArgumentException("가격은 0 이상이어야 합니다");
-    }
+    this.reservedAt = LocalDateTime.now();
   }
 }
