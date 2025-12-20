@@ -1,0 +1,110 @@
+package com.example.be.concert.domain;
+
+import com.example.be.common.BaseEntity;
+import com.example.be.concert.enums.Status;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import java.time.LocalDateTime;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+@Entity
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "concerts")
+@EntityListeners(AuditingEntityListener.class)
+public class Concert extends BaseEntity {
+
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
+
+  @NotBlank(message = "타이틀 정보는 필수입니다.")
+  @Column(nullable = false, length = 300)
+  private String title;
+
+  @Column(length = 200)
+  private String artist;
+
+  @Column(columnDefinition = "TEXT")
+  private String description;
+
+  @Column(name = "poster_url", length = 500)
+  private String posterUrl;
+
+  @NotNull(message = "공연장 정보는 필수입니다")
+  @Valid    // Embaddable 내부 검증
+  @Embedded
+  private Venue venue;
+
+  @NotNull(message = "공연 시작 일시는 필수입니다.")
+  @Column(name = "start_date", nullable = false)
+  private LocalDateTime startDate;
+
+  @NotNull(message = "공연 종료 일시는 필수입니다.")
+  @Column(name = "end_date", nullable = false)
+  private LocalDateTime endDate;
+
+  @NotNull(message = "예약 시작 일시는 필수입니다.")
+  @Column(name = "booking_start_at", nullable = false)
+  private LocalDateTime bookingStartAt;
+
+  @NotNull(message = "예약 종료 일시는 필수입니다.")
+  @Column(name = "booking_end_at", nullable = false)
+  private LocalDateTime bookingEndAt;
+
+  @Enumerated(EnumType.STRING)
+  @Column(length = 20)
+  private Status status = Status.SCHEDULED;
+
+  @Builder
+  public Concert(String title, String artist, String description, String posterUrl, Venue venue,
+      LocalDateTime startDate, LocalDateTime endDate, LocalDateTime bookingStartAt,
+      LocalDateTime bookingEndAt, Status status) {
+    validateConcertDate(startDate, endDate);
+    validateBookingDate(bookingStartAt, bookingEndAt);
+
+    this.title = title;
+    this.artist = artist;
+    this.description = description;
+    this.posterUrl = posterUrl;
+    this.venue = venue;
+    this.startDate = startDate;
+    this.endDate = endDate;
+    this.bookingStartAt = bookingStartAt;
+    this.bookingEndAt = bookingEndAt;
+    this.status = status != null ? status : Status.SCHEDULED;
+  }
+
+  private void validateConcertDate(LocalDateTime startDate, LocalDateTime endDate) {
+    if (startDate == null || endDate == null) {
+      return;
+    }
+    if (startDate.isAfter(endDate)) {
+      throw new IllegalArgumentException("시작 일자는 종료 일자보다 작아야 합니다.");
+    }
+  }
+
+  private void validateBookingDate(LocalDateTime bookingStartAt, LocalDateTime bookingEndAt) {
+    if (bookingStartAt == null || bookingEndAt == null) {
+      return;
+    }
+    if (bookingStartAt.isAfter(bookingEndAt)) {
+      throw new IllegalArgumentException("예약 시작 일자는 예약 종료 일자보다 작아야 합니다.");
+    }
+  }
+}
