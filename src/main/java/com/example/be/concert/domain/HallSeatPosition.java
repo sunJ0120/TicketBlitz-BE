@@ -34,7 +34,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
     }
 )
 @EntityListeners(AuditingEntityListener.class)
-public class HallSeatPositions extends BaseEntity {
+public class HallSeatPosition extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,24 +44,26 @@ public class HallSeatPositions extends BaseEntity {
   @JoinColumn(name = "hall_template_id", nullable = false, foreignKey = @ForeignKey(name = "fk_hall_seat_position_hall"))
   private HallTemplate hallTemplate;
 
-  @NotNull(message = "행 수는 필수입니다.")
-  @Min(value = 1, message = "행 수는 1 이상이어야 합니다.")
+  @NotNull(message = "행 번호는 필수입니다.")
+  @Min(value = 1, message = "행 번호는 1 이상이어야 합니다.")
   @Column(name = "row_num", nullable = false)
   private Integer rowNum;
 
-  @NotNull(message = "좌석 수는 필수입니다.")
-  @Min(value = 1, message = "좌석 수는 1 이상이어야 합니다.")
+  @NotNull(message = "좌석 번호는 필수입니다.")
+  @Min(value = 1, message = "좌석 번호는 1 이상이어야 합니다.")
   @Column(name = "seat_num", nullable = false)
   private Integer seatNum;
 
-  @Column(name = "x_coord")
+  @NotNull(message = "X 좌표는 필수입니다.")
+  @Column(name = "x_coord", nullable = false)
   private Double xCoord;
 
-  @Column(name = "y_coord")
+  @NotNull(message = "Y 좌표는 필수입니다.")
+  @Column(name = "y_coord", nullable = false)
   private Double yCoord;
 
   @Builder
-  public HallSeatPositions(HallTemplate hallTemplate, Integer rowNum, Integer seatNum,
+  public HallSeatPosition(HallTemplate hallTemplate, Integer rowNum, Integer seatNum,
       Double xCoord, Double yCoord) {
     this.hallTemplate = hallTemplate;
     this.rowNum = rowNum;
