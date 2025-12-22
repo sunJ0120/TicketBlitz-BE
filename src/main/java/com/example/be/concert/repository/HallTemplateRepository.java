@@ -1,4 +1,8 @@
 package com.example.be.concert.repository;
 
-public interface HallTemplateRepository {
+import com.example.be.concert.domain.HallTemplate;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface HallTemplateRepository extends JpaRepository<HallTemplate, Integer> {
+
 }
