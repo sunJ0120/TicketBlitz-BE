@@ -67,4 +67,8 @@ public class HallTemplate extends BaseEntity {
     this.totalSeats = totalSeats;
     this.totalRows = totalRows;
   }
+
+  public String getFullVenueName() {
+    return this.building.getName() + " " + this.hallName;
+  }
 }
