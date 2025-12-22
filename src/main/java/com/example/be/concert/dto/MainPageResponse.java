@@ -1,4 +1,10 @@
 package com.example.be.concert.dto;
 
-public class MainpageResponse {
+import java.util.List;
+
+public record MainPageResponse(
+    long openCount,
+    List<ConcertSummaryDto> featuredConcerts
+) {
+
 }
