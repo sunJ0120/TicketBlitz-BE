@@ -105,6 +105,7 @@ CREATE TABLE concerts
     booking_end_at   TIMESTAMP    NOT NULL,
     concert_status   VARCHAR(20)  NOT NULL DEFAULT 'SCHEDULED',
     genre            VARCHAR(20)  NOT NULL,
+    view_count       BIGINT       NOT NULL DEFAULT 0,
 
     created_at       TIMESTAMP             DEFAULT CURRENT_TIMESTAMP,
     updated_at       TIMESTAMP             DEFAULT CURRENT_TIMESTAMP,
@@ -431,7 +432,8 @@ FROM (SELECT 1 as seat_num
 -- 4. 공연 (concerts)
 -- ------------------------------------------------
 INSERT INTO concerts (hall_template_id, title, artist, description, poster_url,
-                      start_date, end_date, booking_start_at, booking_end_at, concert_status, genre)
+                      start_date, end_date, booking_start_at, booking_end_at, concert_status, genre,
+                      view_count)
 VALUES (1, -- 올림픽공원 체조경기장
         'IU Concert: The Golden Hour',
         'IU',
@@ -441,7 +443,7 @@ VALUES (1, -- 올림픽공원 체조경기장
         '2025-03-15 22:00:00',
         '2025-01-15 20:00:00',
         '2025-03-15 18:00:00',
-        'BOOKING_OPEN', 'KPOP'),
+        'BOOKING_OPEN', 'KPOP', 10),
        (1, -- 올림픽공원 체조경기장
         'BTS Yet To Come',
         'BTS',
@@ -451,7 +453,7 @@ VALUES (1, -- 올림픽공원 체조경기장
         '2025-04-20 22:00:00',
         '2025-02-20 20:00:00',
         '2025-04-20 17:00:00',
-        'SCHEDULED', 'KPOP');
+        'SCHEDULED', 'KPOP', 12);
 
 -- ------------------------------------------------
 -- 5. 공연별 구역 (concert_sections)

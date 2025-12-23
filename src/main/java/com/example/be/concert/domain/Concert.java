@@ -82,6 +82,9 @@ public class Concert extends BaseEntity {
   @Column(length = 20, nullable = false)
   private Genre genre;
 
+  @Column(name = "view_count")
+  private long viewCount;
+
   @ElementCollection
   @CollectionTable(
       name = "concert_sections",
@@ -98,7 +101,7 @@ public class Concert extends BaseEntity {
   public Concert(HallTemplate hallTemplate, String title, String artist, String description,
       String posterUrl,
       LocalDateTime startDate, LocalDateTime endDate, LocalDateTime bookingStartAt,
-      LocalDateTime bookingEndAt, ConcertStatus concertStatus, Genre genre,
+      LocalDateTime bookingEndAt, ConcertStatus concertStatus, Genre genre, long viewCount,
       List<ConcertSection> concertSections) {
     validateConcertDate(startDate, endDate);
     validateBookingDate(bookingStartAt, bookingEndAt);
@@ -114,6 +117,7 @@ public class Concert extends BaseEntity {
     this.bookingEndAt = bookingEndAt;
     this.concertStatus = concertStatus != null ? concertStatus : ConcertStatus.SCHEDULED;
     this.genre = genre;
+    this.viewCount = concertStatus != null ? viewCount : 0;
 
     if (concertSections != null) {
       this.concertSections = concertSections;
