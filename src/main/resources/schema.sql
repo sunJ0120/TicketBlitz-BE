@@ -104,6 +104,8 @@ CREATE TABLE concerts
     booking_start_at TIMESTAMP    NOT NULL,
     booking_end_at   TIMESTAMP    NOT NULL,
     concert_status   VARCHAR(20)  NOT NULL DEFAULT 'SCHEDULED',
+    genre            VARCHAR(20)  NOT NULL,
+    view_count       BIGINT       NOT NULL DEFAULT 0,
 
     created_at       TIMESTAMP             DEFAULT CURRENT_TIMESTAMP,
     updated_at       TIMESTAMP             DEFAULT CURRENT_TIMESTAMP,
@@ -430,7 +432,8 @@ FROM (SELECT 1 as seat_num
 -- 4. 공연 (concerts)
 -- ------------------------------------------------
 INSERT INTO concerts (hall_template_id, title, artist, description, poster_url,
-                      start_date, end_date, booking_start_at, booking_end_at, status)
+                      start_date, end_date, booking_start_at, booking_end_at, concert_status, genre,
+                      view_count)
 VALUES (1, -- 올림픽공원 체조경기장
         'IU Concert: The Golden Hour',
         'IU',
@@ -440,7 +443,7 @@ VALUES (1, -- 올림픽공원 체조경기장
         '2025-03-15 22:00:00',
         '2025-01-15 20:00:00',
         '2025-03-15 18:00:00',
-        'BOOKING_OPEN'),
+        'BOOKING_OPEN', 'KPOP', 10),
        (1, -- 올림픽공원 체조경기장
         'BTS Yet To Come',
         'BTS',
@@ -450,7 +453,7 @@ VALUES (1, -- 올림픽공원 체조경기장
         '2025-04-20 22:00:00',
         '2025-02-20 20:00:00',
         '2025-04-20 17:00:00',
-        'SCHEDULED');
+        'SCHEDULED', 'KPOP', 12);
 
 -- ------------------------------------------------
 -- 5. 공연별 구역 (concert_sections)
@@ -458,18 +461,18 @@ VALUES (1, -- 올림픽공원 체조경기장
 -- ------------------------------------------------
 -- IU 콘서트 (concert_id = 1)
 INSERT INTO concert_sections (concert_id, section_name, row_start, row_end, price)
-VALUES (1, 'VIP', 1, 2, 220000),  -- 1~2행: VIP
-       (1, 'R석', 3, 10, 154000),  -- 3~10행: R석
-       (1, 'S석', 11, 16, 110000), -- 11~16행: S석
-       (1, 'A석', 17, 20, 77000);
+VALUES (1, 'VIP', 1, 2, 220000), -- 1~2행: VIP
+       (1, 'R', 3, 10, 154000),  -- 3~10행: R석
+       (1, 'S', 11, 16, 110000), -- 11~16행: S석
+       (1, 'A', 17, 20, 77000);
 -- 17~20행: A석
 
 -- BTS 콘서트 (concert_id = 2) - 다른 가격, 다른 구분!
 INSERT INTO concert_sections (concert_id, section_name, row_start, row_end, price)
-VALUES (2, 'VIP', 1, 4, 300000),  -- 1~4행: VIP (더 넓음)
-       (2, 'R석', 5, 12, 200000),  -- 5~12행: R석
-       (2, 'S석', 13, 18, 150000), -- 13~18행: S석
-       (2, 'A석', 19, 20, 100000);
+VALUES (2, 'VIP', 1, 4, 300000), -- 1~4행: VIP (더 넓음)
+       (2, 'R', 5, 12, 200000),  -- 5~12행: R석
+       (2, 'S', 13, 18, 150000), -- 13~18행: S석
+       (2, 'A', 19, 20, 100000);
 -- 19~20행: A석
 
 -- ------------------------------------------------
@@ -490,7 +493,7 @@ WHERE hsp.hall_template_id = 1
 INSERT INTO concert_seats (concert_id, hall_seat_position_id, section_name, seat_status)
 SELECT 1           as concert_id,
        hsp.id      as hall_seat_position_id,
-       'R석'        as section_name,
+       'R'         as section_name,
        'AVAILABLE' as seat_status
 FROM hall_seat_positions hsp
 WHERE hsp.hall_template_id = 1
@@ -500,7 +503,7 @@ WHERE hsp.hall_template_id = 1
 INSERT INTO concert_seats (concert_id, hall_seat_position_id, section_name, seat_status)
 SELECT 1           as concert_id,
        hsp.id      as hall_seat_position_id,
-       'S석'        as section_name,
+       'S'         as section_name,
        'AVAILABLE' as seat_status
 FROM hall_seat_positions hsp
 WHERE hsp.hall_template_id = 1
@@ -510,7 +513,7 @@ WHERE hsp.hall_template_id = 1
 INSERT INTO concert_seats (concert_id, hall_seat_position_id, section_name, seat_status)
 SELECT 1           as concert_id,
        hsp.id      as hall_seat_position_id,
-       'A석'        as section_name,
+       'A'         as section_name,
        'AVAILABLE' as seat_status
 FROM hall_seat_positions hsp
 WHERE hsp.hall_template_id = 1
@@ -531,7 +534,7 @@ WHERE hsp.hall_template_id = 1
 INSERT INTO concert_seats (concert_id, hall_seat_position_id, section_name, seat_status)
 SELECT 2           as concert_id,
        hsp.id      as hall_seat_position_id,
-       'R석'        as section_name, -- BTS는 5~12행이 R석
+       'R'         as section_name, -- BTS는 5~12행이 R석
        'AVAILABLE' as seat_status
 FROM hall_seat_positions hsp
 WHERE hsp.hall_template_id = 1

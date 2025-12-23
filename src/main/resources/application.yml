@@ -24,24 +24,24 @@ spring: # dev 환경
     compose:
       enabled: true
   datasource:
-    url: jdbc:h2:file:./data/be_db;AUTO_SERVER=TRUE
+    url: jdbc:h2:mem:testdb
     driver-class-name: org.h2.Driver
     username: sa
     password: password
   sql:
     init:
-      mode: never   # 임베디드 db 첫 실행시로 변경 원하면 embedded로 변경
-  #      schema-locations: classpath:schema.sql
+      mode: always   # 임베디드 db 첫 실행시로 변경 원하면 embedded로 변경
+      schema-locations: classpath:schema.sql
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
-      ddl-auto: update  # ← H2 자동 생성
+      ddl-auto: none  # ← H2 자동 생성
     properties:
       hibernate:
         show-sql: true
         format_sql: true
         highlight_sql: true
-  #    defer-datasource-initialization: true    # JPA 초기화 후 schema.sql 실행
+      defer-datasource-initialization: true    # JPA 초기화 후 schema.sql 실행
   h2:
     console:
       enabled: true

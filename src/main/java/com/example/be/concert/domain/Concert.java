@@ -2,6 +2,7 @@ package com.example.be.concert.domain;
 
 import com.example.be.common.BaseEntity;
 import com.example.be.concert.enums.ConcertStatus;
+import com.example.be.concert.enums.Genre;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -77,6 +78,13 @@ public class Concert extends BaseEntity {
   @Column(name = "concert_status", length = 20, nullable = false)
   private ConcertStatus concertStatus;
 
+  @Enumerated(EnumType.STRING)
+  @Column(length = 20, nullable = false)
+  private Genre genre;
+
+  @Column(name = "view_count")
+  private long viewCount;
+
   @ElementCollection
   @CollectionTable(
       name = "concert_sections",
@@ -93,7 +101,7 @@ public class Concert extends BaseEntity {
   public Concert(HallTemplate hallTemplate, String title, String artist, String description,
       String posterUrl,
       LocalDateTime startDate, LocalDateTime endDate, LocalDateTime bookingStartAt,
-      LocalDateTime bookingEndAt, ConcertStatus concertStatus,
+      LocalDateTime bookingEndAt, ConcertStatus concertStatus, Genre genre, long viewCount,
       List<ConcertSection> concertSections) {
     validateConcertDate(startDate, endDate);
     validateBookingDate(bookingStartAt, bookingEndAt);
@@ -108,10 +116,19 @@ public class Concert extends BaseEntity {
     this.bookingStartAt = bookingStartAt;
     this.bookingEndAt = bookingEndAt;
     this.concertStatus = concertStatus != null ? concertStatus : ConcertStatus.SCHEDULED;
+    this.genre = genre;
+    this.viewCount = concertStatus != null ? viewCount : 0;
 
     if (concertSections != null) {
       this.concertSections = concertSections;
     }
+  }
+
+  public int getMinPrice() {
+    return concertSections.stream()
+        .mapToInt(ConcertSection::getPrice)
+        .min()
+        .orElse(0);
   }
 
   private void validateConcertDate(LocalDateTime startDate, LocalDateTime endDate) {
