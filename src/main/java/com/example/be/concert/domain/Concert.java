@@ -139,6 +139,10 @@ public class Concert extends BaseEntity {
     return concertSections.stream().mapToInt(ConcertSection::getPrice).min().orElse(0);
   }
 
+  public void incrementViewCount() {
+    this.viewCount += 1;
+  }
+
   private void validateConcertDate(LocalDateTime startDate, LocalDateTime endDate) {
     if (startDate == null || endDate == null) {
       return;
