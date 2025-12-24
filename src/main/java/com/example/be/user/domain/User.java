@@ -12,7 +12,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "users")
-@EntityListeners(AuditingEntityListener.class)    // 생성/수정 시간 자동 관리를 위해 추가
+@EntityListeners(AuditingEntityListener.class) // 생성/수정 시간 자동 관리를 위해 추가
 public class User extends BaseEntity {
 
   @Id
@@ -44,12 +44,7 @@ public class User extends BaseEntity {
   }
 
   public static User createUser(String email, String password, String name) {
-    return User.builder()
-        .email(email)
-        .password(password)
-        .name(name)
-        .role(Role.USER)
-        .build();
+    return User.builder().email(email).password(password).name(name).role(Role.USER).build();
   }
 
   public void grantAdminRole() {

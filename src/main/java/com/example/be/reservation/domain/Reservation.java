@@ -17,10 +17,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -40,12 +38,16 @@ public class Reservation extends BaseEntity {
   private Long id;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
-  @JoinColumn(name = "user_id", nullable = false,
+  @JoinColumn(
+      name = "user_id",
+      nullable = false,
       foreignKey = @ForeignKey(name = "fk_reservation_user"))
   private User user;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
-  @JoinColumn(name = "seat_id", nullable = false,
+  @JoinColumn(
+      name = "seat_id",
+      nullable = false,
       foreignKey = @ForeignKey(name = "fk_reservation_seat"))
   private ConcertSeat concertSeat;
 
@@ -72,8 +74,7 @@ public class Reservation extends BaseEntity {
   private LocalDateTime expiresAt;
 
   @Builder
-  public Reservation(User user, ConcertSeat concertSeat, Integer price,
-      LocalDateTime expiresAt) {
+  public Reservation(User user, ConcertSeat concertSeat, Integer price, LocalDateTime expiresAt) {
     validateExpiresAt(expiresAt);
 
     this.user = user;

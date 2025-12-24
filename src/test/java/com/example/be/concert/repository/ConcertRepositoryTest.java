@@ -11,8 +11,7 @@ import org.springframework.test.context.jdbc.Sql;
 @Sql("/test-data/concert-repository-test.sql")
 class ConcertRepositoryTest {
 
-  @Autowired
-  private ConcertRepository concertRepository;
+  @Autowired private ConcertRepository concertRepository;
 
   @Test
   void 예매오픈_상태_공연수_카운트() {

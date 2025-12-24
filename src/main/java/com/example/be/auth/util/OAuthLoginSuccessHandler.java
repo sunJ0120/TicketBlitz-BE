@@ -15,11 +15,12 @@ import org.springframework.stereotype.Component;
 public class OAuthLoginSuccessHandler implements AuthenticationSuccessHandler {
 
   @Override
-  public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-      Authentication authentication) throws IOException, ServletException {
+  public void onAuthenticationSuccess(
+      HttpServletRequest request, HttpServletResponse response, Authentication authentication)
+      throws IOException, ServletException {
 
     OAuth2AuthenticationToken authToken = (OAuth2AuthenticationToken) authentication;
-    String provider = authToken.getAuthorizedClientRegistrationId();  // "kakao", "naver", "google"
+    String provider = authToken.getAuthorizedClientRegistrationId(); // "kakao", "naver", "google"
 
     OAuth2User oAuth2User = authToken.getPrincipal();
     Map<String, Object> attributes = oAuth2User.getAttributes();
@@ -30,8 +31,7 @@ public class OAuthLoginSuccessHandler implements AuthenticationSuccessHandler {
 
     // provider별 분기
     if ("kakao".equals(provider)) {
-      providerId = attributes.get("id")
-          .toString();
+      providerId = attributes.get("id").toString();
 
       Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
       email = (String) kakaoAccount.get("email");
@@ -60,7 +60,6 @@ public class OAuthLoginSuccessHandler implements AuthenticationSuccessHandler {
     request.setAttribute("name", name);
     request.setAttribute("OAUTH2_AUTHENTICATED", true);
 
-    request.getRequestDispatcher("/auth/login/social")
-        .forward(request, response);
+    request.getRequestDispatcher("/auth/login/social").forward(request, response);
   }
 }

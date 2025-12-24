@@ -42,7 +42,10 @@ public class Concert extends BaseEntity {
   private Long id;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
-  @JoinColumn(name = "hall_template_id", nullable = false, foreignKey = @ForeignKey(name = "fk_concert_hall_template"))
+  @JoinColumn(
+      name = "hall_template_id",
+      nullable = false,
+      foreignKey = @ForeignKey(name = "fk_concert_hall_template"))
   private HallTemplate hallTemplate;
 
   @NotBlank(message = "타이틀 정보는 필수입니다.")
@@ -90,18 +93,26 @@ public class Concert extends BaseEntity {
       name = "concert_sections",
       joinColumns = @JoinColumn(name = "concert_id"),
       foreignKey = @ForeignKey(name = "fk_concert_section_concert"),
-      uniqueConstraints = @UniqueConstraint(
-          name = "uk_concert_section",
-          columnNames = {"concert_id", "section_name"}
-      )
-  )
+      uniqueConstraints =
+          @UniqueConstraint(
+              name = "uk_concert_section",
+              columnNames = {"concert_id", "section_name"}))
   private List<ConcertSection> concertSections = new ArrayList<>();
 
   @Builder
-  public Concert(HallTemplate hallTemplate, String title, String artist, String description,
+  public Concert(
+      HallTemplate hallTemplate,
+      String title,
+      String artist,
+      String description,
       String posterUrl,
-      LocalDateTime startDate, LocalDateTime endDate, LocalDateTime bookingStartAt,
-      LocalDateTime bookingEndAt, ConcertStatus concertStatus, Genre genre, long viewCount,
+      LocalDateTime startDate,
+      LocalDateTime endDate,
+      LocalDateTime bookingStartAt,
+      LocalDateTime bookingEndAt,
+      ConcertStatus concertStatus,
+      Genre genre,
+      long viewCount,
       List<ConcertSection> concertSections) {
     validateConcertDate(startDate, endDate);
     validateBookingDate(bookingStartAt, bookingEndAt);
@@ -125,10 +136,7 @@ public class Concert extends BaseEntity {
   }
 
   public int getMinPrice() {
-    return concertSections.stream()
-        .mapToInt(ConcertSection::getPrice)
-        .min()
-        .orElse(0);
+    return concertSections.stream().mapToInt(ConcertSection::getPrice).min().orElse(0);
   }
 
   private void validateConcertDate(LocalDateTime startDate, LocalDateTime endDate) {

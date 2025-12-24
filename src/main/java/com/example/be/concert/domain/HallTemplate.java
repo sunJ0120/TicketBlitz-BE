@@ -28,12 +28,10 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Table(
     name = "hall_templates",
     uniqueConstraints = {
-        @UniqueConstraint(
-            name = "uk_building_hall",
-            columnNames = {"building_id", "hall_name"}
-        )
-    }
-)
+      @UniqueConstraint(
+          name = "uk_building_hall",
+          columnNames = {"building_id", "hall_name"})
+    })
 @EntityListeners(AuditingEntityListener.class)
 public class HallTemplate extends BaseEntity {
 
@@ -42,7 +40,10 @@ public class HallTemplate extends BaseEntity {
   private Long id;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
-  @JoinColumn(name = "building_id", nullable = false, foreignKey = @ForeignKey(name = "fk_hall_template_building"))
+  @JoinColumn(
+      name = "building_id",
+      nullable = false,
+      foreignKey = @ForeignKey(name = "fk_hall_template_building"))
   private Building building;
 
   @NotBlank(message = "홀 이름은 필수입니다.")
@@ -60,8 +61,7 @@ public class HallTemplate extends BaseEntity {
   private Integer totalRows;
 
   @Builder
-  public HallTemplate(Building building, String hallName,
-      Integer totalSeats, Integer totalRows) {
+  public HallTemplate(Building building, String hallName, Integer totalSeats, Integer totalRows) {
     this.building = building;
     this.hallName = hallName;
     this.totalSeats = totalSeats;

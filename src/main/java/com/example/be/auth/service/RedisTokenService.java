@@ -26,36 +26,23 @@ public class RedisTokenService {
   public void addToBlacklist(String token, long expirationMillis) {
     String key = generateBlacklistKey(token);
 
-    redisTemplate.opsForValue()
-        .set(
-            key,
-            "logout",
-            expirationMillis,
-            TimeUnit.MILLISECONDS
-        );
+    redisTemplate.opsForValue().set(key, "logout", expirationMillis, TimeUnit.MILLISECONDS);
   }
 
   public void addToWhitelist(Long userId, String refreshToken, long expirationMillis) {
     String key = generateWhitelistKey(userId);
 
-    redisTemplate.opsForValue()
-        .set(
-            key,
-            refreshToken,
-            expirationMillis,
-            TimeUnit.MILLISECONDS
-        );
+    redisTemplate.opsForValue().set(key, refreshToken, expirationMillis, TimeUnit.MILLISECONDS);
   }
 
-  public boolean isBlacklisted(@NonNull String token) {    // redis 블랙리스트 안에 존재여부를 따진다.
+  public boolean isBlacklisted(@NonNull String token) { // redis 블랙리스트 안에 존재여부를 따진다.
     String key = generateBlacklistKey(token);
     return Boolean.TRUE.equals(redisTemplate.hasKey(key));
   }
 
   public boolean isValidRefreshToken(@NonNull Long userId, @NonNull String clientToken) {
     String key = generateWhitelistKey(userId);
-    String storedToken = (String) redisTemplate.opsForValue()
-        .get(key);
+    String storedToken = (String) redisTemplate.opsForValue().get(key);
 
     return storedToken != null && storedToken.equals(clientToken);
   }

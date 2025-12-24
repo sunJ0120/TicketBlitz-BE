@@ -26,22 +26,24 @@ public class AuthHttpHelper {
   }
 
   public static ResponseCookie createLogoutCookie() {
-    ResponseCookie cookie = ResponseCookie.from(REFRESH_TOKEN_NAME, "")
-        .maxAge(0)
-        .path("/api/auth/refresh")
-        .httpOnly(true)
-        .build();
+    ResponseCookie cookie =
+        ResponseCookie.from(REFRESH_TOKEN_NAME, "")
+            .maxAge(0)
+            .path("/api/auth/refresh")
+            .httpOnly(true)
+            .build();
     return cookie;
   }
 
   public ResponseCookie getResponseCookie(String refreshToken) {
-    ResponseCookie responseCookie = ResponseCookie.from(REFRESH_TOKEN_NAME, refreshToken)
-        .maxAge(3600)
-        .path("/api/auth/refresh")    // 해당 url이 요청할때만 전송
-        .secure(true)
-        .httpOnly(true)
-        .sameSite("Lax")
-        .build();
+    ResponseCookie responseCookie =
+        ResponseCookie.from(REFRESH_TOKEN_NAME, refreshToken)
+            .maxAge(3600)
+            .path("/api/auth/refresh") // 해당 url이 요청할때만 전송
+            .secure(true)
+            .httpOnly(true)
+            .sameSite("Lax")
+            .build();
     return responseCookie;
   }
 }

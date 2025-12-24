@@ -5,12 +5,11 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
-
-import java.io.IOException;
 
 @AllArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -23,13 +22,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
   protected boolean shouldNotFilter(HttpServletRequest request) {
     String path = request.getRequestURI();
 
-    return path.startsWith("/swagger-ui") || path.startsWith("/v3/api-docs") || path.startsWith(
-        "/swagger-resources") || path.startsWith("/h2-console") || path.startsWith("/auth");
+    return path.startsWith("/swagger-ui")
+        || path.startsWith("/v3/api-docs")
+        || path.startsWith("/swagger-resources")
+        || path.startsWith("/h2-console")
+        || path.startsWith("/auth");
   }
 
   @Override
-  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-      FilterChain filterChain) throws ServletException, IOException {
+  protected void doFilterInternal(
+      HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+      throws ServletException, IOException {
     // @formatter:off
     String token = jwtUtils.resolveToken(request);
 
@@ -43,10 +46,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     } catch (io.jsonwebtoken.JwtException e) {
       response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
       response.getWriter().println(e.getMessage());
-      return;    // 필터 중단
+      return; // 필터 중단
     }
 
-    if(redisTokenService.isBlacklisted(token)){
+    if (redisTokenService.isBlacklisted(token)) {
       response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
       return;
     }

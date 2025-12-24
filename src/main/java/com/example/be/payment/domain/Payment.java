@@ -38,7 +38,10 @@ public class Payment extends BaseTimeEntity {
   private Long id;
 
   @OneToOne(fetch = FetchType.LAZY, optional = false)
-  @JoinColumn(name = "reservation_id", nullable = false, foreignKey = @ForeignKey(name = "fk_payment_reservation"))
+  @JoinColumn(
+      name = "reservation_id",
+      nullable = false,
+      foreignKey = @ForeignKey(name = "fk_payment_reservation"))
   private Reservation reservation;
 
   @Column(name = "order_id", nullable = false, length = 50, unique = true)
@@ -72,8 +75,8 @@ public class Payment extends BaseTimeEntity {
   private LocalDateTime refundedAt;
 
   @Builder
-  public Payment(Reservation reservation, String orderId, BigDecimal amount,
-      PaymentMethod paymentMethod) {
+  public Payment(
+      Reservation reservation, String orderId, BigDecimal amount, PaymentMethod paymentMethod) {
     this.reservation = reservation;
     this.orderId = orderId;
     this.amount = amount;

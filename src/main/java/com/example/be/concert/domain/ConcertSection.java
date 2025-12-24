@@ -6,7 +6,6 @@ import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.AccessLevel;
@@ -40,7 +39,7 @@ public class ConcertSection {
 
   @Pattern(regexp = "^#[0-9A-Fa-f]{6}$", message = "올바른 색상 코드 형식이 아닙니다")
   @Column(name = "color", length = 7)
-  private String color = "#808080";    // HEX color code (#FFFFFF)
+  private String color = "#808080"; // HEX color code (#FFFFFF)
 
   @Builder
   public ConcertSection(SeatLabel sectionLabel, Integer rowStart, Integer rowEnd, Integer price) {
