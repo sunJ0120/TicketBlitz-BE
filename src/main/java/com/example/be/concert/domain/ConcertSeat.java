@@ -27,12 +27,10 @@ import lombok.NoArgsConstructor;
 @Table(
     name = "concert_seats",
     uniqueConstraints = {
-        @UniqueConstraint(
-            name = "uk_concert_seat",
-            columnNames = {"concert_id", "hall_seat_position_id"}
-        )
-    }
-)
+      @UniqueConstraint(
+          name = "uk_concert_seat",
+          columnNames = {"concert_id", "hall_seat_position_id"})
+    })
 public class ConcertSeat extends BaseEntity {
 
   @Id
@@ -40,11 +38,17 @@ public class ConcertSeat extends BaseEntity {
   private Long id;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
-  @JoinColumn(name = "concert_id", nullable = false, foreignKey = @ForeignKey(name = "fk_concert_seat_concert"))
+  @JoinColumn(
+      name = "concert_id",
+      nullable = false,
+      foreignKey = @ForeignKey(name = "fk_concert_seat_concert"))
   private Concert concert;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
-  @JoinColumn(name = "hall_seat_position_id", nullable = false, foreignKey = @ForeignKey(name = "fk_concert_seat_position"))
+  @JoinColumn(
+      name = "hall_seat_position_id",
+      nullable = false,
+      foreignKey = @ForeignKey(name = "fk_concert_seat_position"))
   private HallSeatPosition hallSeatPosition;
 
   @Enumerated(EnumType.STRING)
@@ -56,8 +60,11 @@ public class ConcertSeat extends BaseEntity {
   private SeatStatus seatStatus;
 
   @Builder
-  public ConcertSeat(Concert concert, HallSeatPosition hallSeatPosition,
-      SeatLabel sectionLabel, SeatStatus seatStatus) {
+  public ConcertSeat(
+      Concert concert,
+      HallSeatPosition hallSeatPosition,
+      SeatLabel sectionLabel,
+      SeatStatus seatStatus) {
     this.concert = concert;
     this.hallSeatPosition = hallSeatPosition;
     this.sectionLabel = sectionLabel;

@@ -54,27 +54,38 @@ public class SecurityConfig {
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     // @formatter:off
-    http
-        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+    http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
         .csrf(csrf -> csrf.disable())
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(
-            auth -> auth
-                .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**",
-                    "/swagger-resources/**").permitAll()
-                .requestMatchers("/auth/login/social").permitAll()
-                .requestMatchers("/auth/**").permitAll()
-                .requestMatchers("/h2-console/**").permitAll()
-                .requestMatchers("/api/v1/concerts/main").permitAll()
-                .requestMatchers("/admin/**").hasRole("ADMIN")
-                .requestMatchers("/api/**").hasRole("USER").anyRequest()
-                .authenticated())
+            auth ->
+                auth.requestMatchers(
+                        "/swagger-ui/**",
+                        "/swagger-ui.html",
+                        "/v3/api-docs/**",
+                        "/swagger-resources/**")
+                    .permitAll()
+                    .requestMatchers("/auth/login/social")
+                    .permitAll()
+                    .requestMatchers("/auth/**")
+                    .permitAll()
+                    .requestMatchers("/h2-console/**")
+                    .permitAll()
+                    .requestMatchers("/api/v1/concerts/main")
+                    .permitAll()
+                    .requestMatchers("/admin/**")
+                    .hasRole("ADMIN")
+                    .requestMatchers("/api/**")
+                    .hasRole("USER")
+                    .anyRequest()
+                    .authenticated())
         .oauth2Login(oauth2 -> oauth2.successHandler(oAuthLoginSuccessHandler))
         .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))
         .formLogin(form -> form.disable())
         .httpBasic(httpBasic -> httpBasic.disable())
-        .addFilterBefore(new JwtAuthenticationFilter(jwtProvider, redisTokenService, jwtUtils),
+        .addFilterBefore(
+            new JwtAuthenticationFilter(jwtProvider, redisTokenService, jwtUtils),
             UsernamePasswordAuthenticationFilter.class);
 
     return http.build();

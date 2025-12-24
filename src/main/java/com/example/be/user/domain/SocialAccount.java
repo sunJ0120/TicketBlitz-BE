@@ -28,12 +28,10 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Table(
     name = "social_accounts",
     uniqueConstraints = {
-        @UniqueConstraint(
-            name = "uk_provider_account",
-            columnNames = {"provider", "provider_id"}
-        )
-    }
-)
+      @UniqueConstraint(
+          name = "uk_provider_account",
+          columnNames = {"provider", "provider_id"})
+    })
 @EntityListeners(AuditingEntityListener.class)
 public class SocialAccount extends BaseTimeEntity {
 
@@ -42,7 +40,10 @@ public class SocialAccount extends BaseTimeEntity {
   private Long id;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "user_id", nullable = false, foreignKey = @ForeignKey(name = "fk_social_account_user"))
+  @JoinColumn(
+      name = "user_id",
+      nullable = false,
+      foreignKey = @ForeignKey(name = "fk_social_account_user"))
   private User user;
 
   @Enumerated(EnumType.STRING)

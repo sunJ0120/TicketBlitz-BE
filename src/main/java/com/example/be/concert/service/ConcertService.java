@@ -17,12 +17,13 @@ public class ConcertService {
   public MainPageResponse getMainPageData() {
     long count = concertRepository.countByConcertStatus(ConcertStatus.BOOKING_OPEN);
 
-    List<ConcertSummaryDto> featured = concertRepository
-        .findTop10ByConcertStatusInOrderByViewCountDesc(List.of(ConcertStatus.BOOKING_OPEN,
-            ConcertStatus.SCHEDULED))
-        .stream()
-        .map(ConcertSummaryDto::from)
-        .toList();
+    List<ConcertSummaryDto> featured =
+        concertRepository
+            .findTop10ByConcertStatusInOrderByViewCountDesc(
+                List.of(ConcertStatus.BOOKING_OPEN, ConcertStatus.SCHEDULED))
+            .stream()
+            .map(ConcertSummaryDto::from)
+            .toList();
 
     return new MainPageResponse(count, featured);
   }

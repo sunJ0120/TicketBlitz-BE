@@ -3,16 +3,15 @@ package com.example.be.security.jwt;
 import com.example.be.user.enums.Role;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import java.nio.charset.StandardCharsets;
+import java.util.Date;
 import java.util.List;
+import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
-
-import javax.crypto.SecretKey;
-import java.nio.charset.StandardCharsets;
-import java.util.Date;
 
 @Component
 public class JwtProvider {
@@ -53,10 +52,7 @@ public class JwtProvider {
   }
 
   public void validateToken(String token) {
-    Jwts.parser()
-        .verifyWith(secretKey)
-        .build()
-        .parseSignedClaims(token);
+    Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token);
   }
 
   public Long getUserId(String token) {
@@ -73,18 +69,13 @@ public class JwtProvider {
   }
 
   private Claims getClaims(String token) {
-    return Jwts.parser()
-        .verifyWith(secretKey)
-        .build()
-        .parseSignedClaims(token)
-        .getPayload();
+    return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload();
   }
 
   public Long getExpiration(String token) {
     Claims claims = getClaims(token);
 
-    return claims.getExpiration()
-        .getTime();
+    return claims.getExpiration().getTime();
   }
 
   public Authentication getAuthentication(String token) {
@@ -92,9 +83,6 @@ public class JwtProvider {
     String role = getRole(token).getRole();
 
     return new UsernamePasswordAuthenticationToken(
-        userId,
-        null,
-        List.of(new SimpleGrantedAuthority("ROLE_" + role))
-    );
+        userId, null, List.of(new SimpleGrantedAuthority("ROLE_" + role)));
   }
 }

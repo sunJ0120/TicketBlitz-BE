@@ -44,8 +44,10 @@ public class AuthController {
   private String frontendUrl;
 
   @Operation(summary = "회원가입", description = "새로운 사용자를 등록합니다.")
-  @ApiResponses({@ApiResponse(responseCode = "200", description = "회원가입 성공"),
-      @ApiResponse(responseCode = "400", description = "이미 존재하는 이메일")})
+  @ApiResponses({
+    @ApiResponse(responseCode = "200", description = "회원가입 성공"),
+    @ApiResponse(responseCode = "400", description = "이미 존재하는 이메일")
+  })
   @PostMapping("/signup")
   public ResponseEntity<String> signup(@Valid @RequestBody SignupRequest request) {
     authService.signup(request);
@@ -53,8 +55,10 @@ public class AuthController {
   }
 
   @Operation(summary = "로그인", description = "이메일/비밀번호로 로그인합니다.")
-  @ApiResponses({@ApiResponse(responseCode = "200", description = "로그인 성공"),
-      @ApiResponse(responseCode = "400", description = "잘못된 이메일 또는 비밀번호")})
+  @ApiResponses({
+    @ApiResponse(responseCode = "200", description = "로그인 성공"),
+    @ApiResponse(responseCode = "400", description = "잘못된 이메일 또는 비밀번호")
+  })
   @PostMapping("/login")
   public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
     LoginResponse response = authService.login(request);
@@ -73,8 +77,10 @@ public class AuthController {
 
   // 소셜 로그인 구현
   @Operation(summary = "소셜 로그인", description = "Oauth2 프로토콜을 활용합니다.")
-  @ApiResponses({@ApiResponse(responseCode = "200", description = "로그인 성공"),
-      @ApiResponse(responseCode = "403", description = "잘못된 접근")})
+  @ApiResponses({
+    @ApiResponse(responseCode = "200", description = "로그인 성공"),
+    @ApiResponse(responseCode = "403", description = "잘못된 접근")
+  })
   @GetMapping("/login/social")
   public void socialLogin(HttpServletRequest request, HttpServletResponse response)
       throws IOException {
@@ -98,14 +104,17 @@ public class AuthController {
     response.addHeader(HttpHeaders.SET_COOKIE, responseCookie.toString());
 
     // accesss token만 전달
-    response.sendRedirect(
-        frontendUrl + "/oauth/callback?token=" + loginResponse.accessToken());
+    response.sendRedirect(frontendUrl + "/oauth/callback?token=" + loginResponse.accessToken());
   }
 
-  @Operation(summary = "로그아웃", description = "Access Token을 블랙리스트에 등록하여 로그아웃 처리합니다.", security = {
-      @SecurityRequirement(name = "BearerAuth")})
-  @ApiResponses({@ApiResponse(responseCode = "200", description = "로그아웃 성공"),
-      @ApiResponse(responseCode = "401", description = "인증 실패")})
+  @Operation(
+      summary = "로그아웃",
+      description = "Access Token을 블랙리스트에 등록하여 로그아웃 처리합니다.",
+      security = {@SecurityRequirement(name = "BearerAuth")})
+  @ApiResponses({
+    @ApiResponse(responseCode = "200", description = "로그아웃 성공"),
+    @ApiResponse(responseCode = "401", description = "인증 실패")
+  })
   @PostMapping("/logout")
   public ResponseEntity<Void> logout(HttpServletRequest request) {
     String token = jwtUtils.resolveToken(request);
@@ -113,16 +122,13 @@ public class AuthController {
     try {
       token = authValidator.validateAndGetToken(token);
     } catch (io.jsonwebtoken.JwtException | IllegalArgumentException e) {
-      return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-          .build();
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
     authService.logout(token);
     ResponseCookie cookie = authHttpHelper.createLogoutCookie();
 
-    return ResponseEntity.ok()
-        .header(HttpHeaders.SET_COOKIE, cookie.toString())
-        .build();
+    return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString()).build();
   }
 
   @PostMapping("/refresh")
@@ -132,8 +138,7 @@ public class AuthController {
     try {
       refreshToken = authValidator.validateAndGetToken(refreshToken);
     } catch (io.jsonwebtoken.JwtException | IllegalArgumentException e) {
-      return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-          .build();
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
     LoginResponse response;
@@ -141,8 +146,7 @@ public class AuthController {
     try {
       response = authService.refresh(refreshToken);
     } catch (BadCredentialsException e) {
-      return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-          .build();
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
     ResponseCookie responseCookie = authHttpHelper.getResponseCookie(response.refreshToken());

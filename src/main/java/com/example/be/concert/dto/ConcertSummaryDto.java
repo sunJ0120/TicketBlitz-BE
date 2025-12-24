@@ -13,8 +13,7 @@ public record ConcertSummaryDto(
     String venueName,
     Integer minPrice,
     String status,
-    String statusDisplayName
-) {
+    String statusDisplayName) {
 
   public static ConcertSummaryDto from(Concert concert) {
     // @formatter:off
@@ -28,7 +27,6 @@ public record ConcertSummaryDto(
         concert.getHallTemplate().getFullVenueName(),
         concert.getMinPrice(),
         concert.getConcertStatus().name(),
-        concert.getConcertStatus().getDisplayName()
-    );
+        concert.getConcertStatus().getDisplayName());
   }
 }

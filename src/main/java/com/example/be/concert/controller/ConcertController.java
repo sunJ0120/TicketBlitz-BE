@@ -21,9 +21,7 @@ public class ConcertController {
   private final ConcertService concertService;
 
   @Operation(summary = "메인 페이지", description = "메인 페이지에 필요한 데이터")
-  @ApiResponses({
-      @ApiResponse(responseCode = "200", description = "메인 페이지 조회 성공")
-  })
+  @ApiResponses({@ApiResponse(responseCode = "200", description = "메인 페이지 조회 성공")})
   @GetMapping("/main")
   public ResponseEntity<MainPageResponse> main() {
     return ResponseEntity.ok(concertService.getMainPageData());

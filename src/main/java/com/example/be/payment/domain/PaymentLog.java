@@ -34,7 +34,10 @@ public class PaymentLog extends BaseTimeEntity {
   private Long id;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
-  @JoinColumn(name = "payment_id", nullable = false, foreignKey = @ForeignKey(name = "fk_payment_log_payment"))
+  @JoinColumn(
+      name = "payment_id",
+      nullable = false,
+      foreignKey = @ForeignKey(name = "fk_payment_log_payment"))
   private Payment payment;
 
   @Enumerated(EnumType.STRING)
@@ -59,8 +62,13 @@ public class PaymentLog extends BaseTimeEntity {
   private String pgRawResponse;
 
   @Builder
-  public PaymentLog(Payment payment, EventType eventType, PaymentStatus oldStatus,
-      PaymentStatus newStatus, String pgResponseCode, String pgResponseMessage,
+  public PaymentLog(
+      Payment payment,
+      EventType eventType,
+      PaymentStatus oldStatus,
+      PaymentStatus newStatus,
+      String pgResponseCode,
+      String pgResponseMessage,
       String pgRawResponse) {
     this.payment = payment;
     this.eventType = eventType;
