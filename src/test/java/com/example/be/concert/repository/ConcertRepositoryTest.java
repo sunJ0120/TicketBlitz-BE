@@ -9,13 +9,16 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
 @DataJpaTest
+@ActiveProfiles("test")
 @Sql("/test-data/concert-repository-test.sql")
 class ConcertRepositoryTest {
 
-  @Autowired private ConcertRepository concertRepository;
+  @Autowired
+  private ConcertRepository concertRepository;
 
   @Test
   void 예매오픈_상태_공연수_카운트() {
@@ -33,7 +36,8 @@ class ConcertRepositoryTest {
     Optional<Concert> concert = concertRepository.findByIdWithDetail(1L);
     // then
     assertThat(concert).isPresent();
-    assertThat(concert.get().getTitle()).isEqualTo("IU Concert");
+    assertThat(concert.get()
+        .getTitle()).isEqualTo("IU Concert");
   }
 
   @Test
@@ -49,10 +53,14 @@ class ConcertRepositoryTest {
   void fetch_join으로_연관_엔티티_한번에_로딩() {
     // given - 테스트 데이터
     // when
-    Concert concert = concertRepository.findByIdWithDetail(1L).orElseThrow();
+    Concert concert = concertRepository.findByIdWithDetail(1L)
+        .orElseThrow();
     // then
-    assertThat(concert.getHallTemplate().getHallName()).isEqualTo("테스트홀");
-    assertThat(concert.getHallTemplate().getBuilding().getName()).isEqualTo("테스트 공연장");
+    assertThat(concert.getHallTemplate()
+        .getHallName()).isEqualTo("테스트홀");
+    assertThat(concert.getHallTemplate()
+        .getBuilding()
+        .getName()).isEqualTo("테스트 공연장");
     assertThat(concert.getConcertSections()).hasSize(2);
   }
 
@@ -60,10 +68,14 @@ class ConcertRepositoryTest {
   void 섹션_없는_공연도_조회_가능() {
     // given - 테스트 데이터
     // when
-    Concert concert = concertRepository.findByIdWithDetail(3L).orElseThrow();
+    Concert concert = concertRepository.findByIdWithDetail(3L)
+        .orElseThrow();
     // then
-    assertThat(concert.getHallTemplate().getHallName()).isEqualTo("테스트홀");
-    assertThat(concert.getHallTemplate().getBuilding().getName()).isEqualTo("테스트 공연장");
+    assertThat(concert.getHallTemplate()
+        .getHallName()).isEqualTo("테스트홀");
+    assertThat(concert.getHallTemplate()
+        .getBuilding()
+        .getName()).isEqualTo("테스트 공연장");
     assertThat(concert.getConcertSections()).isEmpty();
   }
 }
