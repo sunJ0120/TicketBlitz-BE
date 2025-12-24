@@ -29,8 +29,8 @@ public class ConcertController {
     return ResponseEntity.ok(concertService.getMainPageData());
   }
 
-  @Operation(summary = "메인 페이지", description = "메인 페이지에 필요한 데이터")
-  @ApiResponses({@ApiResponse(responseCode = "200", description = "메인 페이지 조회 성공")})
+  @Operation(summary = "상세 페이지", description = "상세 페이지에 필요한 데이터")
+  @ApiResponses({@ApiResponse(responseCode = "200", description = "상세 페이지 조회 성공")})
   @GetMapping("/{id}")
   public ResponseEntity<ConcertDetailResponse> detail(@PathVariable Long id) {
     return ResponseEntity.ok(concertService.getDetailPageData(id));
