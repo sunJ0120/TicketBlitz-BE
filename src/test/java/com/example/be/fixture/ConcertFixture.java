@@ -123,4 +123,22 @@ public class ConcertFixture {
         .maxPrice(maxPrice)
         .build();
   }
+
+  public static Concert createConcertWithDate(
+      HallTemplate hall, String title, LocalDateTime startDate, LocalDateTime endDate) {
+    return Concert.builder()
+        .hallTemplate(hall)
+        .title(title)
+        .artist("Artist")
+        .genre(Genre.KPOP)
+        .concertStatus(ConcertStatus.BOOKING_OPEN)
+        .startDate(startDate)
+        .endDate(endDate)
+        .bookingStartAt(LocalDateTime.now().minusDays(7))
+        .bookingEndAt(LocalDateTime.now().plusMonths(1).minusHours(1))
+        .viewCount(0L)
+        .minPrice(100000)
+        .maxPrice(200000)
+        .build();
+  }
 }
