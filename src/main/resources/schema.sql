@@ -93,25 +93,28 @@ CREATE TABLE hall_seat_positions
 CREATE TABLE concerts
 (
     id               BIGINT PRIMARY KEY AUTO_INCREMENT,
-    hall_template_id BIGINT       NOT NULL,
-    title            VARCHAR(300) NOT NULL,
+    hall_template_id BIGINT         NOT NULL,
+    title            VARCHAR(300)   NOT NULL,
     artist           VARCHAR(200),
     description      TEXT,
     poster_url       VARCHAR(500),
 
-    start_date       TIMESTAMP    NOT NULL,
-    end_date         TIMESTAMP    NOT NULL,
-    booking_start_at TIMESTAMP    NOT NULL,
-    booking_end_at   TIMESTAMP    NOT NULL,
-    concert_status   VARCHAR(20)  NOT NULL DEFAULT 'SCHEDULED',
-    genre            VARCHAR(20)  NOT NULL,
-    view_count       BIGINT       NOT NULL DEFAULT 0,
+    start_date       TIMESTAMP      NOT NULL,
+    end_date         TIMESTAMP      NOT NULL,
+    booking_start_at TIMESTAMP      NOT NULL,
+    booking_end_at   TIMESTAMP      NOT NULL,
+    concert_status   VARCHAR(20)    NOT NULL DEFAULT 'SCHEDULED',
+    genre            VARCHAR(20)    NOT NULL,
+    view_count       BIGINT         NOT NULL DEFAULT 0,
+    min_price        DECIMAL(10, 0) NOT NULL,
+    max_price        DECIMAL(10, 0) NOT NULL,
 
-    created_at       TIMESTAMP             DEFAULT CURRENT_TIMESTAMP,
-    updated_at       TIMESTAMP             DEFAULT CURRENT_TIMESTAMP,
+    created_at       TIMESTAMP               DEFAULT CURRENT_TIMESTAMP,
+    updated_at       TIMESTAMP               DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT fk_concert_hall_template
         FOREIGN KEY (hall_template_id) REFERENCES hall_templates (id) ON DELETE RESTRICT,
+    CONSTRAINT chk_prices CHECK (max_price >= min_price),
     CONSTRAINT chk_concert_dates CHECK (end_date >= start_date),
     CONSTRAINT chk_booking_dates CHECK (booking_end_at >= booking_start_at)
 );
@@ -427,157 +430,3 @@ FROM (SELECT 1 as seat_num
       SELECT 21
       UNION
       SELECT 22) s;
-
--- ------------------------------------------------
--- 4. 공연 (concerts)
--- ------------------------------------------------
-INSERT INTO concerts (hall_template_id, title, artist, description, poster_url,
-                      start_date, end_date, booking_start_at, booking_end_at, concert_status, genre,
-                      view_count)
-VALUES (1, -- 올림픽공원 체조경기장
-        'IU Concert: The Golden Hour',
-        'IU',
-        '아이유의 감성 라이브 콘서트',
-        'https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?w=400&h=533&fit=crop',
-        '2026-01-20 19:00:00',
-        '2026-01-23 22:00:00',
-        '2025-12-24 23:59:00', -- 오늘 밤 (타이머 테스트용)
-        '2025-12-27 18:00:00',
-        'SCHEDULED', 'KPOP', 10), -- 아직 오픈 전이니까 SCHEDULED
-       (1, -- 올림픽공원 체조경기장
-        'BTS Yet To Come',
-        'BTS',
-        'BTS 컴백 콘서트',
-        'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?w=400&h=533&fit=crop',
-        '2026-01-10 18:00:00',
-        '2026-01-13 22:00:00',
-        '2025-12-20 20:00:00', -- 이미 지남 (예매중)
-        '2025-12-25 17:00:00',
-        'BOOKING_OPEN', 'KPOP', 12);
--- 이미 오픈됨
-
--- ------------------------------------------------
--- 5. 공연별 구역 (concert_sections)
--- @ElementCollection - 공연마다 섹션 정의가 다름
--- ------------------------------------------------
--- IU 콘서트 (concert_id = 1)
-INSERT INTO concert_sections (concert_id, section_name, row_start, row_end, price)
-VALUES (1, 'VIP', 1, 2, 220000), -- 1~2행: VIP
-       (1, 'R', 3, 10, 154000),  -- 3~10행: R석
-       (1, 'S', 11, 16, 110000), -- 11~16행: S석
-       (1, 'A', 17, 20, 77000);
--- 17~20행: A석
-
--- BTS 콘서트 (concert_id = 2) - 다른 가격, 다른 구분!
-INSERT INTO concert_sections (concert_id, section_name, row_start, row_end, price)
-VALUES (2, 'VIP', 1, 4, 300000), -- 1~4행: VIP (더 넓음)
-       (2, 'R', 5, 12, 200000),  -- 5~12행: R석
-       (2, 'S', 13, 18, 150000), -- 13~18행: S석
-       (2, 'A', 19, 20, 100000);
--- 19~20행: A석
-
--- ------------------------------------------------
--- 6. 공연별 좌석 (concert_seats)
--- hall_seat_position_id 참조 + section_name 매핑
--- ------------------------------------------------
--- IU 콘서트 VIP 좌석 (1~2행, hall_seat_position_id 1~24)
-INSERT INTO concert_seats (concert_id, hall_seat_position_id, section_name, seat_status)
-SELECT 1           as concert_id,
-       hsp.id      as hall_seat_position_id,
-       'VIP'       as section_name,
-       'AVAILABLE' as seat_status
-FROM hall_seat_positions hsp
-WHERE hsp.hall_template_id = 1
-  AND hsp.row_num BETWEEN 1 AND 2;
-
--- IU 콘서트 R석 좌석 (3~10행) - 샘플 (3~4행만)
-INSERT INTO concert_seats (concert_id, hall_seat_position_id, section_name, seat_status)
-SELECT 1           as concert_id,
-       hsp.id      as hall_seat_position_id,
-       'R'         as section_name,
-       'AVAILABLE' as seat_status
-FROM hall_seat_positions hsp
-WHERE hsp.hall_template_id = 1
-  AND hsp.row_num BETWEEN 3 AND 4;
-
--- IU 콘서트 S석 좌석 (11~16행) - 샘플 (11~12행만)
-INSERT INTO concert_seats (concert_id, hall_seat_position_id, section_name, seat_status)
-SELECT 1           as concert_id,
-       hsp.id      as hall_seat_position_id,
-       'S'         as section_name,
-       'AVAILABLE' as seat_status
-FROM hall_seat_positions hsp
-WHERE hsp.hall_template_id = 1
-  AND hsp.row_num BETWEEN 11 AND 12;
-
--- IU 콘서트 A석 좌석 (17~20행) - 샘플 (17행만)
-INSERT INTO concert_seats (concert_id, hall_seat_position_id, section_name, seat_status)
-SELECT 1           as concert_id,
-       hsp.id      as hall_seat_position_id,
-       'A'         as section_name,
-       'AVAILABLE' as seat_status
-FROM hall_seat_positions hsp
-WHERE hsp.hall_template_id = 1
-  AND hsp.row_num = 17;
-
--- BTS 콘서트 VIP 좌석 (1~4행) - 1~2행만 샘플
--- 같은 hall_seat_position이지만 다른 concert_id, 다른 section_name!
-INSERT INTO concert_seats (concert_id, hall_seat_position_id, section_name, seat_status)
-SELECT 2           as concert_id,
-       hsp.id      as hall_seat_position_id,
-       'VIP'       as section_name, -- BTS는 1~4행이 VIP
-       'AVAILABLE' as seat_status
-FROM hall_seat_positions hsp
-WHERE hsp.hall_template_id = 1
-  AND hsp.row_num BETWEEN 1 AND 2;
-
--- BTS 콘서트 R석 좌석 (5~12행) - 샘플 (3~4행 위치 재사용)
-INSERT INTO concert_seats (concert_id, hall_seat_position_id, section_name, seat_status)
-SELECT 2           as concert_id,
-       hsp.id      as hall_seat_position_id,
-       'R'         as section_name, -- BTS는 5~12행이 R석
-       'AVAILABLE' as seat_status
-FROM hall_seat_positions hsp
-WHERE hsp.hall_template_id = 1
-  AND hsp.row_num BETWEEN 3 AND 4;
--- 실제로는 5~12행이지만 샘플 데이터로 3~4행 재사용
-
--- ------------------------------------------------
--- 7. 사용자 (users)
--- ------------------------------------------------
-INSERT INTO users (email, password, name, role)
-VALUES ('admin@test.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZRGdjGj/n3.wF5gH1C5MNKJsWqE.m',
-        '관리자', 'ADMIN'),
-       ('user1@test.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZRGdjGj/n3.wF5gH1C5MNKJsWqE.m',
-        '김철수', 'USER'),
-       ('user2@test.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZRGdjGj/n3.wF5gH1C5MNKJsWqE.m',
-        '이영희', 'USER');
-
--- ------------------------------------------------
--- 8. 예매 (reservations)
--- ------------------------------------------------
--- user1이 IU 콘서트 1행 1번 좌석 예매 (확정)
-INSERT INTO reservations (user_id, seat_id, price, reservation_status, reserved_at, confirmed_at,
-                          expires_at)
-VALUES (2, 1, 220000, 'CONFIRMED', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP,
-        DATEADD('MINUTE', 15, CURRENT_TIMESTAMP));
-
--- user2가 IU 콘서트 1행 2번 좌석 예매 (결제 대기)
-INSERT INTO reservations (user_id, seat_id, price, reservation_status, reserved_at, expires_at)
-VALUES (3, 2, 220000, 'PENDING', CURRENT_TIMESTAMP, DATEADD('MINUTE', 15, CURRENT_TIMESTAMP));
-
--- 예매한 좌석 상태 업데이트
-UPDATE concert_seats
-SET seat_status = 'SOLD'
-WHERE id = 1;
-UPDATE concert_seats
-SET seat_status = 'RESERVED'
-WHERE id = 2;
-
--- ------------------------------------------------
--- 9. 결제 (payments) - 샘플
--- ------------------------------------------------
-INSERT INTO payments (reservation_id, order_id, amount, payment_method, payment_status,
-                      pg_transaction_id, pg_response_code, initiated_at, confirmed_at)
-VALUES (1, 'ORDER-2025-001', 220000, 'CARD', 'CONFIRMED',
-        'PG-TXN-12345', 'SUCCESS', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
