@@ -42,7 +42,8 @@ public class ConcertSection {
   private String color = "#808080"; // HEX color code (#FFFFFF)
 
   @Builder
-  public ConcertSection(SeatLabel sectionLabel, Integer rowStart, Integer rowEnd, Integer price) {
+  public ConcertSection(
+      SeatLabel sectionLabel, Integer rowStart, Integer rowEnd, Integer price, String color) {
     validateRows(rowStart, rowEnd);
     this.sectionLabel = sectionLabel;
     this.rowStart = rowStart;
