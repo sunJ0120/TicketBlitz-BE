@@ -44,7 +44,7 @@ public class ConcertRepositoryCustomImpl implements ConcertRepositoryCustom {
         .leftJoin(concert.concertSections, concertSection)
         .fetchJoin()
         .where(buildSearchCondition(condition), buildCursorCondition(cursor, isAsc))
-        .orderBy(buildOrderSpecifier(cursor.sortType(), isAsc))
+        .orderBy(buildOrderSpecifier(sortType, isAsc))
         .limit(size + 1)
         .fetch();
   }
