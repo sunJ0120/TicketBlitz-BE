@@ -76,6 +76,9 @@ public class AuthController {
   @GetMapping("/login/social")
   public void socialLogin(HttpServletRequest request, HttpServletResponse response)
       throws IOException {
+    // TODO: 계정 연동 정책 개선 필요 (GitHub Issue #XX)
+    // - 다른 이메일의 소셜 계정으로 중복 유저 생성 가능
+    // - 일반 로그인 유저 소셜 연동 시 확인 절차 없음
 
     // forward 검증
     if (request.getAttribute("OAUTH2_AUTHENTICATED") == null) {
