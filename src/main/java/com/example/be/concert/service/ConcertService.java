@@ -10,13 +10,14 @@ import com.example.be.concert.dto.CursorPageResponse;
 import com.example.be.concert.enums.ConcertSortType;
 import com.example.be.concert.exception.ConcertErrorCode;
 import com.example.be.concert.repository.ConcertRepository;
-import jakarta.transaction.Transactional;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class ConcertService {
 
   private final ConcertRepository concertRepository;

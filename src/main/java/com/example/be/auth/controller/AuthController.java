@@ -63,16 +63,8 @@ public class AuthController {
   public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
     LoginResponse response = authService.login(request);
 
-    // refreshToken 분리해서 따로 HttpOnly에 저장
-    String refreshToken = response.refreshToken();
-    ResponseCookie responseCookie = authHttpHelper.getResponseCookie(refreshToken);
-
-    response = new LoginResponse(response.accessToken(), null);
-
     // accesss token만 전달
-    return ResponseEntity.ok()
-        .header(HttpHeaders.SET_COOKIE, responseCookie.toString())
-        .body(response);
+    return buildLoginResponse(response);
   }
 
   // 소셜 로그인 구현
@@ -84,6 +76,9 @@ public class AuthController {
   @GetMapping("/login/social")
   public void socialLogin(HttpServletRequest request, HttpServletResponse response)
       throws IOException {
+    // TODO: 계정 연동 정책 개선 필요 (GitHub Issue #XX)
+    // - 다른 이메일의 소셜 계정으로 중복 유저 생성 가능
+    // - 일반 로그인 유저 소셜 연동 시 확인 절차 없음
 
     // forward 검증
     if (request.getAttribute("OAUTH2_AUTHENTICATED") == null) {
@@ -100,7 +95,7 @@ public class AuthController {
 
     // refreshToken 분리해서 따로 HttpOnly에 저장
     String refreshToken = loginResponse.refreshToken();
-    ResponseCookie responseCookie = authHttpHelper.getResponseCookie(refreshToken);
+    ResponseCookie responseCookie = authHttpHelper.createRefreshTokenCookie(refreshToken);
     response.addHeader(HttpHeaders.SET_COOKIE, responseCookie.toString());
 
     // accesss token만 전달
@@ -149,11 +144,12 @@ public class AuthController {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
-    ResponseCookie responseCookie = authHttpHelper.getResponseCookie(response.refreshToken());
-    response = new LoginResponse(response.accessToken(), null);
+    return buildLoginResponse(response);
+  }
 
-    return ResponseEntity.ok()
-        .header(HttpHeaders.SET_COOKIE, responseCookie.toString())
-        .body(response);
+  private ResponseEntity<LoginResponse> buildLoginResponse(LoginResponse response) {
+    ResponseCookie cookie = authHttpHelper.createRefreshTokenCookie(response.refreshToken());
+    LoginResponse body = new LoginResponse(response.accessToken(), null);
+    return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString()).body(body);
   }
 }

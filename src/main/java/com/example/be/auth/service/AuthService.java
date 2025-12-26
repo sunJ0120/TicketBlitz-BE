@@ -10,14 +10,15 @@ import com.example.be.user.enums.Provider;
 import com.example.be.user.enums.Role;
 import com.example.be.user.repository.SocialAccountRepository;
 import com.example.be.user.repository.UserRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class AuthService {
 
@@ -27,6 +28,7 @@ public class AuthService {
   private final PasswordEncoder passwordEncoder;
   private final RedisTokenService redisTokenService;
 
+  @Transactional
   public void signup(SignupRequest request) {
     if (userRepository.findByEmail(request.email()).isPresent()) {
       throw new IllegalArgumentException("이미 존재하는 이메일입니다.");

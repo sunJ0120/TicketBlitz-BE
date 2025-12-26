@@ -12,6 +12,8 @@ import com.example.be.concert.enums.ConcertSortType;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.DateTimePath;
+import com.querydsl.core.types.dsl.NumberPath;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -31,7 +33,7 @@ public class ConcertRepositoryCustomImpl implements ConcertRepositoryCustom {
       ConcertCursor cursor,
       int size,
       ConcertSortType sortType,
-      boolean isAsc) { // 파라미터 명확하게
+      boolean isAsc) {
     // @formatter:off
     return queryFactory
         .selectFrom(concert)
@@ -90,24 +92,10 @@ public class ConcertRepositoryCustomImpl implements ConcertRepositoryCustom {
 
   // 정렬 조건을 담기 위한 (커서 방향과 항상 일치)
   private OrderSpecifier<?>[] buildOrderSpecifier(ConcertSortType sortType, boolean isAsc) {
-    return switch (sortType) {
-      case VIEW_COUNT ->
-          isAsc
-              ? new OrderSpecifier[] {concert.viewCount.asc(), concert.id.asc()}
-              : new OrderSpecifier[] {concert.viewCount.desc(), concert.id.desc()};
-      case PRICE ->
-          isAsc
-              ? new OrderSpecifier[] {concert.minPrice.asc(), concert.id.asc()}
-              : new OrderSpecifier[] {concert.minPrice.desc(), concert.id.desc()};
-      case TICKET_OPEN_AT ->
-          isAsc
-              ? new OrderSpecifier[] {concert.bookingStartAt.asc(), concert.id.asc()}
-              : new OrderSpecifier[] {concert.bookingStartAt.desc(), concert.id.desc()};
-      case CONCERT_DATE ->
-          isAsc
-              ? new OrderSpecifier[] {concert.startDate.asc(), concert.id.asc()}
-              : new OrderSpecifier[] {concert.startDate.desc(), concert.id.desc()};
-    };
+    var field = sortType.getField();
+    return isAsc
+        ? new OrderSpecifier<?>[] {field.asc(), concert.id.asc()}
+        : new OrderSpecifier<?>[] {field.desc(), concert.id.desc()};
   }
 
   private BooleanExpression priceBetween(Integer userMin, Integer userMax) {
@@ -147,62 +135,39 @@ public class ConcertRepositoryCustomImpl implements ConcertRepositoryCustom {
 
   private BooleanExpression buildViewCountCondition(ConcertCursor cursor, boolean isAsc) {
     Long value = Long.parseLong(cursor.sortValue());
-
-    if (isAsc) { // 오름차순
-      return concert
-          .viewCount
-          .gt(value)
-          .or(concert.viewCount.eq(value).and(concert.id.gt(cursor.id())));
-    } else { // 내림차순
-      return concert
-          .viewCount
-          .lt(value)
-          .or(concert.viewCount.eq(value).and(concert.id.lt(cursor.id())));
-    }
+    return buildNumberCursorCondition(concert.viewCount, value, cursor.id(), isAsc);
   }
 
   private BooleanExpression buildPriceCondition(ConcertCursor cursor, boolean isAsc) {
     Integer value = Integer.parseInt(cursor.sortValue());
-    if (isAsc) {
-      return concert
-          .minPrice
-          .gt(value)
-          .or(concert.minPrice.eq(value).and(concert.id.gt(cursor.id())));
-    } else {
-      return concert
-          .minPrice
-          .lt(value)
-          .or(concert.minPrice.eq(value).and(concert.id.lt(cursor.id())));
-    }
+    return buildNumberCursorCondition(concert.minPrice, value, cursor.id(), isAsc);
   }
 
   private BooleanExpression buildTicketOpenAtCondition(ConcertCursor cursor, boolean isAsc) {
     LocalDateTime value = LocalDateTime.parse(cursor.sortValue());
-    if (isAsc) {
-      return concert
-          .bookingStartAt
-          .gt(value)
-          .or(concert.bookingStartAt.eq(value).and(concert.id.gt(cursor.id())));
-    } else {
-      return concert
-          .bookingStartAt
-          .lt(value)
-          .or(concert.bookingStartAt.eq(value).and(concert.id.lt(cursor.id())));
-    }
+    return buildDateTimeCursorCondition(concert.bookingStartAt, value, cursor.id(), isAsc);
   }
 
   private BooleanExpression buildConcertDateCondition(ConcertCursor cursor, boolean isAsc) {
     LocalDateTime value = LocalDateTime.parse(cursor.sortValue());
+    return buildDateTimeCursorCondition(concert.startDate, value, cursor.id(), isAsc);
+  }
+
+  // 숫자용
+  private <T extends Number & Comparable<?>> BooleanExpression buildNumberCursorCondition(
+      NumberPath<T> field, T value, Long cursorId, boolean isAsc) {
     if (isAsc) {
-      return concert
-          .startDate
-          .gt(value)
-          .or(concert.startDate.eq(value).and(concert.id.gt(cursor.id())));
-    } else {
-      return concert
-          .startDate
-          .lt(value)
-          .or(concert.startDate.eq(value).and(concert.id.lt(cursor.id())));
+      return field.gt(value).or(field.eq(value).and(concert.id.gt(cursorId)));
     }
+    return field.lt(value).or(field.eq(value).and(concert.id.lt(cursorId)));
+  }
+
+  // 날짜용
+  private BooleanExpression buildDateTimeCursorCondition(
+      DateTimePath<LocalDateTime> field, LocalDateTime value, Long cursorId, boolean isAsc) {
+    if (isAsc) {
+      return field.gt(value).or(field.eq(value).and(concert.id.gt(cursorId)));
+    }
+    return field.lt(value).or(field.eq(value).and(concert.id.lt(cursorId)));
   }
 }
