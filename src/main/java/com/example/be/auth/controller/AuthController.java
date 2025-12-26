@@ -63,16 +63,8 @@ public class AuthController {
   public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
     LoginResponse response = authService.login(request);
 
-    // refreshToken 분리해서 따로 HttpOnly에 저장
-    String refreshToken = response.refreshToken();
-    ResponseCookie responseCookie = authHttpHelper.createRefreshTokenCookie(refreshToken);
-
-    response = new LoginResponse(response.accessToken(), null);
-
     // accesss token만 전달
-    return ResponseEntity.ok()
-        .header(HttpHeaders.SET_COOKIE, responseCookie.toString())
-        .body(response);
+    return buildLoginResponse(response);
   }
 
   // 소셜 로그인 구현
@@ -149,12 +141,12 @@ public class AuthController {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
-    ResponseCookie responseCookie =
-        authHttpHelper.createRefreshTokenCookie(response.refreshToken());
-    response = new LoginResponse(response.accessToken(), null);
+    return buildLoginResponse(response);
+  }
 
-    return ResponseEntity.ok()
-        .header(HttpHeaders.SET_COOKIE, responseCookie.toString())
-        .body(response);
+  private ResponseEntity<LoginResponse> buildLoginResponse(LoginResponse response) {
+    ResponseCookie cookie = authHttpHelper.createRefreshTokenCookie(response.refreshToken());
+    LoginResponse body = new LoginResponse(response.accessToken(), null);
+    return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString()).body(body);
   }
 }
