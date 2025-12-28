@@ -24,4 +24,8 @@ public final class QueueRedisKey {
   public static String meta(Long concertId) {
     return META_PREFIX + concertId;
   }
+
+  public static String openConcerts() {
+    return "open:concerts";
+  }
 }
