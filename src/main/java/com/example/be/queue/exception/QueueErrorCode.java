@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 public enum QueueErrorCode implements ErrorCode {
   // 404
   CONCERT_NOT_FOUND(HttpStatus.NOT_FOUND, "QUEUE_001", "존재하지 않는 공연입니다"),
+  NOT_IN_QUEUE(HttpStatus.NOT_FOUND, "QUEUE_006", "대기열에 등록되지 않은 상태입니다"),
 
   // 409
   ALREADY_IN_QUEUE(HttpStatus.CONFLICT, "QUEUE_002", "이미 대기열에 등록되어 있습니다"),
