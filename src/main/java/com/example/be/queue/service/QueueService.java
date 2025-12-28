@@ -38,12 +38,24 @@ public class QueueService {
     return getQueueStatusResponse(userId, queueKey);
   }
 
+  public QueueStatusResponse getStatus(Long concertId, Long userId) {
+    String queueKey = QueueRedisKey.queue(concertId);
+    Double score = redisTemplate.opsForZSet().score(queueKey, userId);
+
+    if (score == null) {
+      throw new QueueException(QueueErrorCode.NOT_IN_QUEUE);
+    }
+
+    return getQueueStatusResponse(userId, queueKey);
+  }
+
   private QueueStatusResponse getQueueStatusResponse(Long userId, String queueKey) {
-    Long rank = redisTemplate.opsForZSet().rank(queueKey, userId) + 1;
+    Long rank = redisTemplate.opsForZSet().rank(queueKey, userId);
     if (rank == null) {
       throw new QueueException(QueueErrorCode.QUEUE_OPERATION_FAILED); // 예상치 못한 상황 방어코드
     }
     rank += 1;
+
     Long totalWaiting = redisTemplate.opsForZSet().size(queueKey);
     Long estimatedWaitSeconds = calculateEstimatedTime(rank);
 
