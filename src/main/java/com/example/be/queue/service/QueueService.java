@@ -34,6 +34,7 @@ public class QueueService {
 
     double newScore = System.currentTimeMillis();
     redisTemplate.opsForZSet().add(queueKey, userId, newScore);
+    redisTemplate.opsForSet().add(QueueRedisKey.openConcerts(), concertId);
 
     return getQueueStatusResponse(userId, queueKey);
   }
