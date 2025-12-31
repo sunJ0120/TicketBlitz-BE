@@ -51,8 +51,13 @@ public class JwtProvider {
         .compact();
   }
 
-  public void validateToken(String token) {
-    Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token);
+  public boolean validateToken(String token) {
+    try {
+      Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token);
+      return true;
+    } catch (JwtException e) {
+      return false;
+    }
   }
 
   public Long getUserId(String token) {
