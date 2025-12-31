@@ -40,6 +40,13 @@ public class QueueService {
   }
 
   public QueueStatusResponse getStatus(Long concertId, Long userId) {
+    String activeKey = QueueRedisKey.active(concertId); // ACTIVE 상태 먼저 체크
+    Boolean isActive = redisTemplate.opsForSet().isMember(activeKey, userId);
+
+    if (Boolean.TRUE.equals(isActive)) {
+      return QueueStatusResponse.active(); // ACTIVE 상태 반환
+    }
+
     String queueKey = QueueRedisKey.queue(concertId);
     Double score = redisTemplate.opsForZSet().score(queueKey, userId);
 
