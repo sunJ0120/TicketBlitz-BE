@@ -13,8 +13,4 @@ public class StompPrincipal implements Principal {
   public String getName() {
     return String.valueOf(userId);
   }
-
-  public Long getUserId() {
-    return userId;
-  }
 }
