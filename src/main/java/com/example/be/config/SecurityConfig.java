@@ -71,6 +71,8 @@ public class SecurityConfig {
                     .permitAll()
                     .requestMatchers("/auth/**")
                     .permitAll()
+                    .requestMatchers("/ws/**")
+                    .permitAll()
                     .requestMatchers("/h2-console/**")
                     .permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/v1/pages/**")
