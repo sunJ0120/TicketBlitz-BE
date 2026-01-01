@@ -3,6 +3,8 @@ package com.example.be.websocket.controller;
 import com.example.be.websocket.dto.SeatHoldRequest;
 import com.example.be.websocket.dto.SeatReleaseRequest;
 import com.example.be.websocket.dto.SeatResponse;
+import com.example.be.websocket.enums.SeatAction;
+import com.example.be.websocket.exception.SeatErrorCode;
 import com.example.be.websocket.service.SeatHoldService;
 import java.security.Principal;
 import java.time.LocalDateTime;
@@ -31,10 +33,10 @@ public class SeatWebSocketController {
       LocalDateTime expiresAt =
           seatHoldService.getExpirationTime(request.performanceId(), request.seatId());
 
-      return new SeatResponse("SUCCESS", "HOLD", request.seatId(), null, null, expiresAt);
+      return SeatResponse.success(SeatAction.HOLD, request.seatId(), expiresAt);
     } else {
-      return new SeatResponse(
-          "ERROR", "HOLD", request.seatId(), "SEAT_ALREADY_OCCUPIED", "다른 사용자가 선택 중인 좌석입니다", null);
+      return SeatResponse.error(
+          SeatAction.HOLD, request.seatId(), SeatErrorCode.SEAT_ALREADY_OCCUPIED);
     }
   }
 
@@ -48,10 +50,9 @@ public class SeatWebSocketController {
         seatHoldService.releaseSeat(request.performanceId(), request.seatId(), userId);
 
     if (success) {
-      return new SeatResponse("SUCCESS", "RELEASE", request.seatId(), null, null, null);
+      return SeatResponse.success(SeatAction.RELEASE, request.seatId(), null);
     } else {
-      return new SeatResponse(
-          "ERROR", "RELEASE", request.seatId(), "RELEASE_FAILED", "본인이 점유한 좌석이 아닙니다", null);
+      return SeatResponse.error(SeatAction.RELEASE, request.seatId(), SeatErrorCode.RELEASE_FAILED);
     }
   }
 }
